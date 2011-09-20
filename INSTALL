@@ -1,0 +1,49 @@
+
+Supported Platforms
+=======================================
+
+uCLbench uses the CMake build system,
+and has been tested on various GNU/Linux systems using GCC and
+Windows Vista and Windows 7 using Microsoft Visual Studio 2010.
+
+Tested OpenCL platforms:
+AMD (CPU and GPU)
+nVidia (GPU)
+Intel (CPU)
+IBM (CPU and Accelerator)
+
+If you are using uCLbench on other platforms please let us know.
+
+
+Installation Instructions
+=======================================
+
+1) set the
+OPENCL_INCLUDE
+and
+OPENCL_LIBRARY
+environment variables to the include / library paths of your OpenCL
+platform (if not already in the compiler's search paths). The include 
+path should contain CL/opencl.h and the associated files, the library
+path should contain libOpenCL.so or OpenCL.dll.
+
+2) run cmake
+3) run make (or open the generated project file and compile when using a different generator)
+
+The binaries and required kernel files are stored in [BUILD_DIR]/bin
+
+
+Examples
+=======================================
+
+The following performs an out-of-source build starting from the directory this file is in:
+mkdir build
+cd build
+export OPENCL_ROOT=~/AMD-APP-SDK-v2.4-lnx64/ 
+export OPENCL_LIBRARY=~/AMD-APP-SDK-v2.4-lnx64/lib/x86_64/ 
+cmake ..
+
+On Windows using Visual Studio 10:
+set OPENCL_INCLUDE=C:\Program Files (x86)\AMD APP\include
+set OPENCL_LIBRARY=C:\Program Files (x86)\AMD APP\lib\x86
+cmake -G "Visual Studio 10" ..

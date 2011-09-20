@@ -1,0 +1,53 @@
+
+Introduction
+=======================================
+
+The OpenCL standard allows targeting a large variety of CPU,
+GPU and accelerator architectures using a single unified programming inter-
+face and language. While the standard guarantees portability of functionality
+for complying applications and platforms, performance portability on such a
+diverse set of hardware is limited. Devices may vary significantly in memory
+architecture as well as type, number and complexity of computational units.
+uCLbench is designed to characterize and compare the OpenCL performance 
+of existing and future devices and software platforms.
+
+
+Benchmark Design
+=======================================
+
+The primary purpose of the suite is to characterize and compare the low-level 
+performance of OpenCL devices and implementations. As such, we did not employ 
+device-specific workarounds to ameliorate problems affecting performance on some 
+particular device, since the same behavior would be encountered by actual programs. 
+
+There are three main implementation challenges for uCLbench:
+1. Ensure accuracy. The benchmarks need to actually measure the intended
+quantity on all devices tested, and it must be possible to verify the computations
+performed.
+2. Minimize overheads. Overheads are always a concern in microbenchmarks,
+but with the variety of devices available to OpenCL they can be hard to avoid.
+E.g. a simple loop that is negligible in its performance impact on a general
+purpose CPU can easily dominate completion time on a GPU.
+3. Prevent compiler optimization. Since kernel code is compiled at runtime
+using the compiler provided by the OpenCL implementation, we have no control
+over the generated code. Thus it is imperative to design the benchmarks in a
+way that does not allow the compiler to perform unintended optimizations. Such
+optimizations could result in the removal of operations that should be measured.
+
+
+Installation
+=======================================
+
+See the INSTALL file for installation instructions.
+
+
+Licensing
+=======================================
+
+uCLbench is distributed under the GPL3, for more information see COPYING.
+
+
+Authors and Contact Information
+=======================================
+
+See AUTHORS.
