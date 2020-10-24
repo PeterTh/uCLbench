@@ -60,7 +60,7 @@ along with uCLbench.  If not, see <http://www.gnu.org/licenses/>.
 	#include <string.h>
 #endif
 
-#include "CL/cl.hpp"
+#include "CL/opencl.hpp"
 
 bool oclCheckErr(int err, const char* errorMessage);
 
