@@ -430,7 +430,7 @@ int main(int argc, char** argv) {
 	// retrieve devices to be benchmarked
 	cl_device_id *used_devices = (cl_device_id*) malloc(sizeof(cl_device_id) * num_devices);
 	unsigned int used_num_devices = 0;
-	if((devices_str == '\0') || (strcmp(devices_str, "all") == 0)) {
+	if((*devices_str == '\0') || (strcmp(devices_str, "all") == 0)) {
 		// nothing specified, run benchmark for all devices
 		for(unsigned int i = 0; i < num_devices; i++) used_devices[i] = devices[i];
 		used_num_devices = num_devices;
@@ -460,7 +460,7 @@ int main(int argc, char** argv) {
 		sizes[i] = 0;
 	}
 	unsigned int num_sizes = 0;
-	if(sizes_str == '\0') {
+	if(*sizes_str == '\0') {
 		// nothing specified, test for maximum
 		num_sizes = 1;
 		for (unsigned int i = 0; i < used_num_devices; i++) {
@@ -502,7 +502,7 @@ int main(int argc, char** argv) {
 	
 	// retrieve amount of repeats for each data-point
 	unsigned int repeats = 0;
-	if (repeat_str == '\0') {
+	if (*repeat_str == '\0') {
 		repeats = DEFAULT_REPEATS;
 	} else {
 		if (sscanf(repeat_str, "%d", &repeats) > 0) {
@@ -515,7 +515,7 @@ int main(int argc, char** argv) {
 	
 	// retrieve amount of iterations used for each data-point
 	unsigned int iterations = 0;
-	if (iterations_str== '\0') {
+	if (*iterations_str== '\0') {
 		iterations = DEFAULT_ITERATIONS;
 	} else {
 		if (sscanf(iterations_str, "%d", &iterations) > 0) {
@@ -528,7 +528,7 @@ int main(int argc, char** argv) {
 
     int f4 = 0;
     char vec[16];
-    if (vector_str== '\0') {
+    if (*vector_str== '\0') {
         f4 = 0;
     } else {
         if (sscanf(vector_str, "%d", &f4) < 0 || f4 < 0 || f4 > 4) {
