@@ -984,7 +984,7 @@ int main(int argc, char** argv) {
 	// retrieve devices to be benchmarked
 	cl_device_id *used_devices = (cl_device_id*) malloc(sizeof(cl_device_id) * num_devices);
 	unsigned int used_num_devices = 0;
-	if((devices_str == '\0') || (strcmp(devices_str, "all") == 0)) {
+	if((*devices_str == '\0') || (strcmp(devices_str, "all") == 0)) {
 		// nothing specified, run benchmark for all devices
 		for(unsigned int i = 0; i < num_devices; i++) used_devices[i] = devices[i];
 		used_num_devices = num_devices;
@@ -1014,7 +1014,7 @@ int main(int argc, char** argv) {
 		sizes[i] = 0;
 	}
 	unsigned int num_sizes = 0;
-	if(sizes_str == '\0') {
+	if(*sizes_str == '\0') {
 		// nothing specified, test for maximum
 		num_sizes = 1;
 		for (unsigned int i = 0; i < used_num_devices; i++) {
@@ -1057,7 +1057,7 @@ int main(int argc, char** argv) {
 	// retrieve functions to be tested
 	unsigned int num_functions = 0;
 	_FUNCTION* functions = NULL;
-	if (function_str == NULL || function_str == '\0') {
+	if (*function_str == NULL || *function_str == '\0') {
 		functions = (_FUNCTION*) malloc(sizeof(_FUNCTION) * MAX_FUNCTIONS);
 		functions[0] = _ADD;
 		functions[1] = _SUB;
@@ -1119,18 +1119,18 @@ int main(int argc, char** argv) {
 			ptr = strtok(NULL, ",");
 		}
 	}
-	if (local_str != NULL && local_str != '\0') {
+	if (*local_str != NULL && *local_str != '\0') {
         localA = atoi(local_str);
         if(localA <= 0) fprintf(stderr, "Error: invalid argument for local: %s\n", local_str);
     }
-	if (blocks_str != NULL && blocks_str != '\0') {
+	if (*blocks_str != NULL && *blocks_str != '\0') {
         blocksA = atoi(blocks_str);
         if(blocksA <= 0) fprintf(stderr, "Error: invalid argument for blocks: %s\n", blocks_str);
     }
 
 	// retrieve amount of repeats for each data-point
 	unsigned int repeats = 0;
-	if (repeat_str == '\0') {
+	if (*repeat_str == '\0') {
 		repeats = 1;
 	} else {
 		if (sscanf(repeat_str, "%d", &repeats) > 0) {
