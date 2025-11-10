@@ -19,13 +19,14 @@ along with uCLbench.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "clinfo.h"
 #include <string.h>
+#include <inttypes.h>
 
 void print_device_list(cl_device_id* devices, int size) {
 	for (int i = 0; i < size; i++) {
 		_DEVICE_INFO* info = get_device_info(devices[i]);
 		printf("Device %i: ", i);
-		printf("%s (%lu MB global memory)\n", info->name, (unsigned long) info->global_mem_size/1024/1024);
-		printf("  max size: %u MB\n", (unsigned int)info->max_mem_alloc_size/1024/1024/2);
+		printf("%s (%" PRIu64 " MB global memory)\n", info->name, (uint64_t) info->global_mem_size/1024/1024);
+		printf("  max size: %" PRIu64 " MB\n", (uint64_t)info->max_mem_alloc_size/1024/1024/2);
 		free_device_info(info);
 	}
 }
@@ -353,8 +354,8 @@ void print_device_info(_DEVICE_INFO* info, char* prefix, char* suffix) {
 	printf("%sversion:               %s%s", prefix, info->version, suffix);
 	printf("%sextensions:            %s%s", prefix, info->extensions, suffix);
 	printf("%stype:                  %s%s", prefix, get_device_type_string(info->type), suffix);
-	printf("%smax compute-units:     %d%s", prefix, info->max_compute_units, suffix);
-	printf("%smax work-item dims:    %d%s", prefix, info->max_work_item_dimensions, suffix);
+	printf("%smax compute-units:     %u%s", prefix, info->max_compute_units, suffix);
+	printf("%smax work-item dims:    %u%s", prefix, info->max_work_item_dimensions, suffix);
 	printf("%smax work-item sizes:   [", prefix);
 	for (cl_uint i = 0; i < info->max_work_item_dimensions; i++) {
 		printf("%zu", info->max_work_item_sizes[i]);
@@ -362,12 +363,12 @@ void print_device_info(_DEVICE_INFO* info, char* prefix, char* suffix) {
 	}
 	printf("]%s", suffix);
 	printf("%smax work-group size:   %zu%s", prefix, info->max_work_group_size, suffix);
-	printf("%smax clock frequency:   %d%s", prefix, info->max_clock_frequency, suffix);
-	printf("%saddress bits:          %d%s", prefix, info->address_bits, suffix);
-	printf("%smax mem alloc size:    %ld%s", prefix, (unsigned long) info->max_mem_alloc_size, suffix);
+	printf("%smax clock frequency:   %u%s", prefix, info->max_clock_frequency, suffix);
+	printf("%saddress bits:          %u%s", prefix, info->address_bits, suffix);
+	printf("%smax mem alloc size:    %" PRIu64 "%s", prefix, (uint64_t) info->max_mem_alloc_size, suffix);
 	printf("%simage support:	     %s%s", prefix, info->image_support ? "yes" : "no", suffix);
-	printf("%smax samplers:          %d%s", prefix, info->max_samplers, suffix);
-	printf("%smax parameter size:    %u%s", prefix, (cl_uint) info->max_parameter_size, suffix);
+	printf("%smax samplers:          %u%s", prefix, info->max_samplers, suffix);
+	printf("%smax parameter size:    %zu%s", prefix, info->max_parameter_size, suffix);
 	printf("%ssingle fp config:     ", prefix);
 	if(info->single_fp_config & CL_FP_DENORM) printf(" denorm");
 	if(info->single_fp_config & CL_FP_INF_NAN) printf(" inf_nan");
@@ -380,14 +381,14 @@ void print_device_info(_DEVICE_INFO* info, char* prefix, char* suffix) {
 		printf("%sglobal mem cache:	     none%s", prefix, suffix);		
 	} else {
 		printf("%sglobal mem cache:	     %s%s", prefix, info->mem_cache_type == CL_READ_ONLY_CACHE ? "read only" : "write_only", suffix);		
-		printf("%sglobal mem cline size: %lu%s", prefix, info->global_mem_cacheline_size, suffix);
-		printf("%sglobal mem cache size: %lu%s", prefix, (unsigned long) info->global_mem_cache_size, suffix);
+		printf("%sglobal mem cline size: %" PRIu64 "%s", prefix, (uint64_t)info->global_mem_cacheline_size, suffix);
+		printf("%sglobal mem cache size: %" PRIu64 "%s", prefix, (uint64_t) info->global_mem_cache_size, suffix);
 	}
-	printf("%sglobal mem size:       %lu%s", prefix, (unsigned long) info->global_mem_size, suffix);
-	printf("%smax const buffer size: %lu%s", prefix, (unsigned long) info->max_constant_buffer_size, suffix);
+	printf("%sglobal mem size:       %" PRIu64 "%s", prefix, (uint64_t) info->global_mem_size, suffix);
+	printf("%smax const buffer size: %" PRIu64 "%s", prefix, (uint64_t) info->max_constant_buffer_size, suffix);
 	printf("%smax const args:        %u%s", prefix, info->max_constant_args, suffix);
 	printf("%sdedicated local mem:   %s%s", prefix, info->local_mem_type == CL_LOCAL ? "yes" : "no", suffix);
-	printf("%slocal mem size:        %lu%s", prefix, (unsigned long) info->local_mem_size, suffix);
+	printf("%slocal mem size:        %" PRIu64 "%s", prefix, (uint64_t) info->local_mem_size, suffix);
 	printf("%serror correction:	     %s%s", prefix, info->error_correction ? "yes" : "no", suffix);
 	printf("%sprofiling timer res:   %zu%s", prefix, info->profiling_timer_resolution, suffix);
 	printf("%sendian little:         %s%s", prefix, info->endian_little ? "yes" : "no", suffix);
@@ -406,9 +407,9 @@ void print_device_info(_DEVICE_INFO* info, char* prefix, char* suffix) {
 
 void print_short_device_info(cl_device_id id, unsigned index) {
 	_DEVICE_INFO* info = get_device_info(id);
-	printf("# device %i: %s // type %s (%lu MB global memory, %lu KB constant memory, %lu KB local memory)\n", 
+	printf("# device %i: %s // type %s (%" PRIu64 " MB global memory, %" PRIu64 " KB constant memory, %" PRIu64 " KB local memory)\n", 
 		index, info->name, info->type == CL_DEVICE_TYPE_CPU ? "cpu" : info->type == CL_DEVICE_TYPE_GPU ? "gpu" : info->type == CL_DEVICE_TYPE_ACCELERATOR ? "accelerator" : "default", 
-		(unsigned long) info->global_mem_size / 1024 /1024, (unsigned long) info->max_constant_buffer_size / 1024, (unsigned long) info->local_mem_size / 1024);
+		(uint64_t) info->global_mem_size / 1024 /1024, (uint64_t) info->max_constant_buffer_size / 1024, (uint64_t) info->local_mem_size / 1024);
 	free_device_info(info);
 }
 
@@ -418,11 +419,11 @@ void print_csv_device_info(cl_device_id id) {
 		   "max_compute_units:unsigned, max_work_group_size:unsigned, max_work_item_dimensions:unsigned, max_work_item_size:unsigned, max_clock_frequency:unsigned, "
 		   "global_mem_size:unsigned, global_mem_cache_size:unsigned, global_mem_cacheline_size:unsigned, "
 		   "local_mem_size:unsigned, local_mem_type:unsigned, max_constant_buffer_size:unsigned, max_constant_args:unsigned\n");
-	printf("#dev: %s,|, %s,|, %s,|, %s,|, %s,|, %u,|, %lu,|, %u,|, %lu,|, %u,|, %lu,|, %lu,|, %lu,|, %lu,|, %u,|, %lu,|, %u\n", 
+	printf("#dev: %s,|, %s,|, %s,|, %s,|, %s,|, %" PRIu32 ",|, %zu,|, %" PRIu32 ",|, %zu,|, %" PRIu32 ",|, %" PRIu64 ",|, %" PRIu64 ",|, %" PRIu64 ",|, %" PRIu64 ",|, %" PRIu32 ",|, %" PRIu64 ",|, %" PRIu32 "\n", 
 		info->name, info->vendor, get_device_type_string(info->type), info->profile, info->version, 
-		info->max_compute_units, info->max_work_group_size, info->max_work_item_dimensions, info->max_work_item_sizes[0], info->max_clock_frequency,
-		info->global_mem_size, info->global_mem_cache_size, info->global_mem_cacheline_size,
-		info->local_mem_size, info->local_mem_type, info->max_constant_buffer_size, info->max_constant_args);
+		(uint32_t)info->max_compute_units, info->max_work_group_size, (uint32_t)info->max_work_item_dimensions, info->max_work_item_sizes[0], (uint32_t)info->max_clock_frequency,
+		(uint64_t)info->global_mem_size, (uint64_t)info->global_mem_cache_size, (uint64_t)info->global_mem_cacheline_size,
+		(uint64_t)info->local_mem_size, (uint32_t)info->local_mem_type, (uint64_t)info->max_constant_buffer_size, (uint32_t)info->max_constant_args);
 		
 	free_device_info(info);
 }

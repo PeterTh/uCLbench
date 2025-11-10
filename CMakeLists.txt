@@ -15,7 +15,7 @@ message("LIBRARY = " $ENV{OPENCL_LIBRARY})
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS -O2")
 else()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX -g -O2 -fPIC")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX -g -O2 -fPIC -Wno-format-security -Wno-format")
 endif()
 
 # setup binary directory + copy kernels to it

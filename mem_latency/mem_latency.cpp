@@ -100,7 +100,7 @@ int run_latency_benchmark(cl_device_id device_id, cl_context context,							// O
 		limit /= 2;
 	}
 	if(size > limit) size = limit;
-	unsigned num_elems = size/sizeof(cl_uint);
+	unsigned num_elems = (unsigned)(size/sizeof(cl_uint));
 	unsigned remainder = num_elems % REQUIRED_ITERATION_DIVISOR;
 	num_elems -= remainder;
 	size = num_elems * sizeof(cl_uint);
@@ -153,7 +153,7 @@ int run_latency_benchmark(cl_device_id device_id, cl_context context,							// O
     }
 	
     // Create the compute program from the source buffer
-	char *source_path; 
+	const char *source_path;
 	switch(mt) {
 		case _LOCAL: source_path = "local_latency.cl"; break;
 		case _CONSTANT: source_path = "constant_latency.cl"; break;

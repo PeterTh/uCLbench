@@ -155,7 +155,7 @@ again:
       }
     }
     if (match!=(struct option*)-1 && (o=match)) {
-      if (longindex) *longindex=o-longopts;
+      if (longindex) *longindex=(int)(o-longopts);
       if (o->has_arg>0) {
 	if (*max=='=')
 	  optarg=max+1;
@@ -249,7 +249,7 @@ bool oclCheckErr(int err, const char* errorMessage)
 }
 
 
-char* oclErrorString(int err)
+const char* oclErrorString(int err)
 {
     switch(err)
     {

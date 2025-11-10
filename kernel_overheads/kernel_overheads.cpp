@@ -355,8 +355,7 @@ int main(int argc, char **argv)
 			avgCompile += compile;
 			avgDuration += duration;
 			avgDelta += delta;
-			if(csv_flag) printf("%8i,%8i,%10.4lf,%10.4lf,%10.4lf\n", i + 1, j, ki_tests[i].kernel_args, ki_tests[i].kernel_loc, compile ,duration, delta);
-			else printf("%8i,%8i,%8i,%8i,%10.4lf,%10.4lf,%10.4lf\n", i + 1, j, ki_tests[i].kernel_args, ki_tests[i].kernel_loc, compile ,duration, delta);
+			printf("%8i,%8i,%8i,%8i,%10.4lf,%10.4lf,%10.4lf\n", i + 1, j, ki_tests[i].kernel_args, ki_tests[i].kernel_loc, compile ,duration, delta);
 			fflush(stdout);
 		}
 

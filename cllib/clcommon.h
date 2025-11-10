@@ -30,6 +30,9 @@ along with uCLbench.  If not, see <http://www.gnu.org/licenses/>.
 	#define no_argument             0
 	#define required_argument       1
 	#define optional_argument       2
+#ifdef NAN
+#undef NAN
+#endif
 	#define NAN 0xffffffff
 	
 	struct option {
@@ -60,11 +63,12 @@ along with uCLbench.  If not, see <http://www.gnu.org/licenses/>.
 	#include <string.h>
 #endif
 
-#include "CL/cl.hpp"
+#define CL_TARGET_OPENCL_VERSION 120
+#include "CL/cl.h"
 
 bool oclCheckErr(int err, const char* errorMessage);
 
-char* oclErrorString(int err);
+const char* oclErrorString(int err);
 
 cl_program load_kernel(const char *path, cl_context context,  const char* preamble);
 

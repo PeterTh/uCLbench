@@ -27,7 +27,6 @@ along with uCLbench.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <CL/cl.h>
 
 #include "oclutils.h"
 #include "clcommon.h"
@@ -198,7 +197,7 @@ int main(int argc, char** argv)
 				shrCheckError(errcode, CL_SUCCESS);
 				time_taken = (time_end - time_start);
 				if(branchtypes == 1 && branchsize == 1) normtime = time_taken;
-				if(!csv_flag) printf("%ld, ", time_taken);
+				if(!csv_flag) printf("%ld, ", (long)time_taken);
 				else {
 					printf("% 8u, % 8u, % 12.2lf, % 8.2lf\n", branchtypes, branchsize, time_taken/1000.0f, time_taken/((double)normtime));
 				}

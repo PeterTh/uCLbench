@@ -80,17 +80,17 @@ int measureLocalMemory(cl_device_id device_id, cl_context context, cl_command_qu
         }
 
         if(type == 1)
-            elementsToAlloc = (elements + local-1)/local;
+            elementsToAlloc = (int)((elements + local-1)/local);
 
         if(f4 == 0)
-            sprintf(buf, "#define dtype float\n");
+     sprintf(buf, "#define dtype float\n");
         else
             sprintf(buf, "#define dtype float%d\n", (int)pow(2.0, f4));
 
-        sprintf(buf+strlen(buf), "#define VEC %d\n#define ELEMENTS %d\n#define localRange %lu\n", f4, elementsToAlloc, local);
+        sprintf(buf+strlen(buf), "#define VEC %d\n#define ELEMENTS %d\n#define localRange %zu\n", f4, elementsToAlloc, local);
 
         if(larg)
-            sprintf(buf+strlen(buf), "#define LARG\n");
+  sprintf(buf+strlen(buf), "#define LARG\n");
 
 		cl_program program = load_kernel(source_path, context, buf);
 		if(!program)
@@ -147,65 +147,63 @@ int measureLocalMemory(cl_device_id device_id, cl_context context, cl_command_qu
         // Set the arguments to our compute kernel
         err = CL_SUCCESS;
         err |= clSetKernelArg(kernel, 0, sizeof(cl_mem), &output);
-        cl_mem g1, g2;
+        cl_mem g1 = NULL, g2 = NULL;
         switch(type)
         {
         case 1:
-            break;
+ break;
         case 2:
-            switch(f4)
-            {
+     switch(f4)
+    {
                 case(1):
-                    g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float2) * elements, NULL, NULL);
-                    g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float2) * elements*2, NULL, NULL);
-                    break;
-                case(2):
-                    g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float4) * elements, NULL, NULL);
-                    g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float4) * elements*2, NULL, NULL);
-                    break;
+            g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float2) * elements, NULL, NULL);
+       g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float2) * elements*2, NULL, NULL);
+        break;
+    case(2):
+     g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float4) * elements, NULL, NULL);
+         g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float4) * elements*2, NULL, NULL);
+         break;
                 case(3):
-                    g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float8) * elements, NULL, NULL);
-                    g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float8) * elements*2, NULL, NULL);
-                    break;
-                case(4):
-                    g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float16) * elements, NULL, NULL);
-                    g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float16) * elements*2, NULL, NULL);
-                    break;
+   g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float8) * elements, NULL, NULL);
+                g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float8) * elements*2, NULL, NULL);
+       break;
+      case(4):
+            g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float16) * elements, NULL, NULL);
+    g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float16) * elements*2, NULL, NULL);
+         break;
                 default:
-                    g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float) * elements, NULL, NULL);
-                    g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float) * elements*2, NULL, NULL);
-                    break;
-                break;
-            }
-            err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &g1);
+          g1 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float) * elements, NULL, NULL);
+    g2 = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_float) * elements*2, NULL, NULL);
+        break;
+          }
+err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &g1);
             err |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &g2);
-            break;
+     break;
         default:
-            if(larg)
+  if(larg)
             switch(f4)
             {
                 case(1):
-                    err |= clSetKernelArg(kernel, 1, sizeof(cl_float2)*elements, NULL);
-                    err |= clSetKernelArg(kernel, 2, sizeof(cl_float2)*elements*2, NULL);
-                    break;
+      err |= clSetKernelArg(kernel, 1, sizeof(cl_float2)*elements, NULL);
+           err |= clSetKernelArg(kernel, 2, sizeof(cl_float2)*elements*2, NULL);
+     break;
                 case(2):
-                    err |= clSetKernelArg(kernel, 1, sizeof(cl_float4)*elements, NULL);
-                    err |= clSetKernelArg(kernel, 2, sizeof(cl_float4)*elements*2, NULL);
-                    break;
-                case(3):
-                    err |= clSetKernelArg(kernel, 1, sizeof(cl_float8)*elements, NULL);
-                    err |= clSetKernelArg(kernel, 2, sizeof(cl_float8)*elements*2, NULL);
-                    break;
-                case(4):
-                    err |= clSetKernelArg(kernel, 1, sizeof(cl_float8)*elements, NULL);
-                    err |= clSetKernelArg(kernel, 2, sizeof(cl_float8)*elements*2, NULL);
-                    break;
-                default:
-                    err |= clSetKernelArg(kernel, 1, sizeof(cl_float)*elements, NULL);
-                    err |= clSetKernelArg(kernel, 2, sizeof(cl_float)*elements*2, NULL);
-                    break;
-                break;
-            }
+             err |= clSetKernelArg(kernel, 1, sizeof(cl_float4)*elements, NULL);
+     err |= clSetKernelArg(kernel, 2, sizeof(cl_float4)*elements*2, NULL);
+     break;
+     case(3):
+err |= clSetKernelArg(kernel, 1, sizeof(cl_float8)*elements, NULL);
+    err |= clSetKernelArg(kernel, 2, sizeof(cl_float8)*elements*2, NULL);
+ break;
+   case(4):
+     err |= clSetKernelArg(kernel, 1, sizeof(cl_float8)*elements, NULL);
+       err |= clSetKernelArg(kernel, 2, sizeof(cl_float8)*elements*2, NULL);
+        break;
+         default:
+      err |= clSetKernelArg(kernel, 1, sizeof(cl_float)*elements, NULL);
+   err |= clSetKernelArg(kernel, 2, sizeof(cl_float)*elements*2, NULL);
+       break;
+     }
         }
         if (err != CL_SUCCESS)
         {
@@ -430,7 +428,7 @@ int main(int argc, char** argv) {
 	// retrieve devices to be benchmarked
 	cl_device_id *used_devices = (cl_device_id*) malloc(sizeof(cl_device_id) * num_devices);
 	unsigned int used_num_devices = 0;
-	if((devices_str == '\0') || (strcmp(devices_str, "all") == 0)) {
+	if((devices_str == NULL) || (strcmp(devices_str, "all") == 0)) {
 		// nothing specified, run benchmark for all devices
 		for(unsigned int i = 0; i < num_devices; i++) used_devices[i] = devices[i];
 		used_num_devices = num_devices;
@@ -460,7 +458,7 @@ int main(int argc, char** argv) {
 		sizes[i] = 0;
 	}
 	unsigned int num_sizes = 0;
-	if(sizes_str == '\0') {
+	if(sizes_str == NULL) {
 		// nothing specified, test for maximum
 		num_sizes = 1;
 		for (unsigned int i = 0; i < used_num_devices; i++) {
@@ -502,7 +500,7 @@ int main(int argc, char** argv) {
 	
 	// retrieve amount of repeats for each data-point
 	unsigned int repeats = 0;
-	if (repeat_str == '\0') {
+	if (repeat_str == NULL) {
 		repeats = DEFAULT_REPEATS;
 	} else {
 		if (sscanf(repeat_str, "%d", &repeats) > 0) {
@@ -515,7 +513,7 @@ int main(int argc, char** argv) {
 	
 	// retrieve amount of iterations used for each data-point
 	unsigned int iterations = 0;
-	if (iterations_str== '\0') {
+	if (iterations_str== NULL) {
 		iterations = DEFAULT_ITERATIONS;
 	} else {
 		if (sscanf(iterations_str, "%d", &iterations) > 0) {
@@ -528,7 +526,7 @@ int main(int argc, char** argv) {
 
     int f4 = 0;
     char vec[16];
-    if (vector_str== '\0') {
+    if (vector_str== NULL) {
         f4 = 0;
     } else {
         if (sscanf(vector_str, "%d", &f4) < 0 || f4 < 0 || f4 > 4) {

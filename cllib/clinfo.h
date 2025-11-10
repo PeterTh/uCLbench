@@ -23,6 +23,7 @@ along with uCLbench.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 
+#define CL_TARGET_OPENCL_VERSION 120
 #include "CL/cl.h"
 
 typedef struct _platform_info {

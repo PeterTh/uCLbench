@@ -359,7 +359,7 @@ cl_kernel genKernel(cl_context context, cl_device_id device_id, _FUNCTION fct, _
             for(int i = 0; i < vec; ++i)
             {
                 sprintf(fctStr+fctLen, function_to_code(fct, ftype, binary_op, ntemps), i, i);
-                fctLen = strlen(fctStr);
+                fctLen = (int)strlen(fctStr);
             }
         }
         else
@@ -386,7 +386,7 @@ cl_kernel genKernel(cl_context context, cl_device_id device_id, _FUNCTION fct, _
 	    else 
 		    sprintf(fctStr, function_to_code(fct, ftype, binary_op, ntemps));
 
-        fctLen = strlen(fctStr);
+        fctLen = (int)strlen(fctStr);
 
 		sprintf(kernelCode+pos, ");\n");
         pos += 3;
@@ -571,7 +571,7 @@ int run_benchmark(cl_context context, cl_command_queue commands, cl_device_id de
     }
 		
     // Create the compute kernel 
-    kernel = genKernel<T>(context, device_id, function, ftype, vec, local, trans ? TRANS_OPERATIONS : ARITH_OPERATIONS, &err);
+    kernel = genKernel<T>(context, device_id, function, ftype, vec, (int)local, trans ? TRANS_OPERATIONS : ARITH_OPERATIONS, &err);
     if (!kernel || err != CL_SUCCESS)
     {
 		fprintf(stderr, "Error: Failed to create compute kernel!\n");
@@ -635,6 +635,9 @@ int run_benchmark(cl_context context, cl_command_queue commands, cl_device_id de
         fprintf(stderr, "Error: Failed to read output array! %s\n", oclErrorString(err));
         return 1;
     }
+
+#pragma warning(push)
+#pragma warning(disable:4244) // disable conversion warning
 
 	// Check consistency
 	if (check_consistency) {
@@ -815,6 +818,8 @@ int run_benchmark(cl_context context, cl_command_queue commands, cl_device_id de
 			return 1;
 		}
 	}
+
+#pragma warning(pop)
 	
 	// return time taken 
 	cl_ulong time_start, time_end;
@@ -984,7 +989,7 @@ int main(int argc, char** argv) {
 	// retrieve devices to be benchmarked
 	cl_device_id *used_devices = (cl_device_id*) malloc(sizeof(cl_device_id) * num_devices);
 	unsigned int used_num_devices = 0;
-	if((devices_str == '\0') || (strcmp(devices_str, "all") == 0)) {
+	if((devices_str == NULL) || (strcmp(devices_str, "all") == 0)) {
 		// nothing specified, run benchmark for all devices
 		for(unsigned int i = 0; i < num_devices; i++) used_devices[i] = devices[i];
 		used_num_devices = num_devices;
@@ -1014,7 +1019,7 @@ int main(int argc, char** argv) {
 		sizes[i] = 0;
 	}
 	unsigned int num_sizes = 0;
-	if(sizes_str == '\0') {
+	if(sizes_str == NULL) {
 		// nothing specified, test for maximum
 		num_sizes = 1;
 		for (unsigned int i = 0; i < used_num_devices; i++) {
@@ -1057,7 +1062,7 @@ int main(int argc, char** argv) {
 	// retrieve functions to be tested
 	unsigned int num_functions = 0;
 	_FUNCTION* functions = NULL;
-	if (function_str == NULL || function_str == '\0') {
+	if (function_str == NULL || *function_str == '\0') {
 		functions = (_FUNCTION*) malloc(sizeof(_FUNCTION) * MAX_FUNCTIONS);
 		functions[0] = _ADD;
 		functions[1] = _SUB;
@@ -1119,18 +1124,18 @@ int main(int argc, char** argv) {
 			ptr = strtok(NULL, ",");
 		}
 	}
-	if (local_str != NULL && local_str != '\0') {
+	if (local_str != NULL && *local_str != '\0') {
         localA = atoi(local_str);
         if(localA <= 0) fprintf(stderr, "Error: invalid argument for local: %s\n", local_str);
     }
-	if (blocks_str != NULL && blocks_str != '\0') {
+	if (blocks_str != NULL && *blocks_str != '\0') {
         blocksA = atoi(blocks_str);
         if(blocksA <= 0) fprintf(stderr, "Error: invalid argument for blocks: %s\n", blocks_str);
     }
 
 	// retrieve amount of repeats for each data-point
 	unsigned int repeats = 0;
-	if (repeat_str == '\0') {
+	if (repeat_str == NULL) {
 		repeats = 1;
 	} else {
 		if (sscanf(repeat_str, "%d", &repeats) > 0) {
@@ -1229,10 +1234,10 @@ int main(int argc, char** argv) {
 				        time /= repeats;
                         mops = global * (sizes[j + i * MAX_SIZES] / 1000000.0) / time * vec;
 				        if(csv_flag)
-					        printf("%8lu, float%2s,%8s,%8s,%12lu,%12.4f,%16.4f\n", global, vec > 1 ? buf : "", function_to_string(functions[f]), 
+					printf("%8zu, float%2s,%8s,%8s,%12lu,%12.4f,%16.4f\n", global, vec > 1 ? buf : "", function_to_string(functions[f]), 
 								ftype_to_string(native_flag ? _NATIVE : _DEFAULT), (unsigned long)sizes[j + i * MAX_SIZES], time, mops);
-				        else
-					        printf("%lu/%u %5s float%s (%s) %12lu Operations \t%f secs\t%.2f MOp/s\n", global , num_functions * num_sizes, 
+				else
+					printf("%6zu/%6u %5s float%s \t(%4s) %12lu Operations \t%12f secs\t%12.2f MOp/s\n", global , num_functions * num_sizes, 
 								function_to_string(functions[f]), vec > 1 ? buf : "", ftype_to_string(native_flag ? _NATIVE : _DEFAULT), 
 								(unsigned long)sizes[j + i * MAX_SIZES], time, mops);
 						fflush(stdout);
@@ -1283,10 +1288,10 @@ int main(int argc, char** argv) {
 				            time /= repeats;
                             mops = global * (sizes[j + i * MAX_SIZES] / 1000000.0) / time * vec;
 				            if(csv_flag)
-								printf("%8lu,double%2s,%8s,%8s,%12lu,%12.4f,%16.4f\n", global, vec > 1 ? buf : "", function_to_string(functions[f]), 
+								printf("%8zu,double%2s,%8s,%8s,%12lu,%12.4f,%16.4f\n", global, vec > 1 ? buf : "", function_to_string(functions[f]), 
 									ftype_to_string(native_flag ? _NATIVE : _DEFAULT), (unsigned long)sizes[j + i * MAX_SIZES], time, mops);
 				            else
-					            printf("%lu/%u %5s double%s (%s) %12lu Operations \t%f secs\t%.2f MOp/s\n", global , num_functions * num_sizes, 
+					        printf("%zu/%u %5s double%s (%s) %12lu Operations \t%f secs\t%.2f MOp/s\n", global , num_functions * num_sizes, 
 									function_to_string(functions[f]), vec > 1 ? buf : "", ftype_to_string(native_flag ? _NATIVE : _DEFAULT), 
 									(unsigned long)sizes[j + i * MAX_SIZES], time, mops);
 							fflush(stdout);
